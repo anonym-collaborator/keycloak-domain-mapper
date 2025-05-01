@@ -10,14 +10,7 @@ import java.util.stream.Stream;
 import org.keycloak.Config;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.common.Profile;
-import org.keycloak.models.ClientSessionContext;
-import org.keycloak.models.KeycloakContext;
-import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.OrganizationModel;
-import org.keycloak.models.ProtocolMapperModel;
-import org.keycloak.models.RealmModel;
-import org.keycloak.models.UserModel;
-import org.keycloak.models.UserSessionModel;
+import org.keycloak.models.*;
 import org.keycloak.models.utils.ModelToRepresentation;
 import org.keycloak.models.utils.RepresentationToModel;
 import org.keycloak.organization.OrganizationProvider;
@@ -76,7 +69,7 @@ public class OrganizationDomainMapper extends AbstractOIDCProtocolMapper impleme
         OrganizationModel organization;
 
         if (orgId == null) {
-            organization = resolveFromRequestedScopes(session, userSession, clientSessionCtx).findFirst();
+            organization = resolveFromRequestedScopes(session, userSession, clientSessionCtx).findFirst().orElse(null);
         } else {
             organization = session.getProvider(OrganizationProvider.class).getById(orgId);
         }
