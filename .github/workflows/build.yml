@@ -1,0 +1,29 @@
+name: Build Keycloak Mapper
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+
+    - name: Build with Maven
+      run: mvn clean package
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: keycloak-domain-mapper-jar
+        path: target/*.jar
