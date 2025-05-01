@@ -14,6 +14,7 @@ import org.keycloak.models.*;
 import org.keycloak.models.utils.ModelToRepresentation;
 import org.keycloak.models.utils.RepresentationToModel;
 import org.keycloak.organization.OrganizationProvider;
+import org.keycloak.organization.protocol.mappers.oidc.OrganizationScope;
 import org.keycloak.protocol.ProtocolMapperUtils;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
 import org.keycloak.protocol.oidc.mappers.AbstractOIDCProtocolMapper;
@@ -25,6 +26,7 @@ import org.keycloak.protocol.oidc.mappers.UserInfoTokenMapper;
 import org.keycloak.provider.EnvironmentDependentProviderFactory;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.representations.IDToken;
+
 
 public class OrganizationDomainMapper extends AbstractOIDCProtocolMapper implements OIDCAccessTokenMapper, OIDCIDTokenMapper {
 
@@ -78,7 +80,7 @@ public class OrganizationDomainMapper extends AbstractOIDCProtocolMapper impleme
             List<OrganizationDomainModel> domains = organization.getDomains();
             if (domains != null && !domains.isEmpty()) {
                 String domainName = domains.get(0).getName();
-                OIDCAttributeMapperHelper.mapClaim(token, mappingModel, domainName);
+                OIDCAttributeMapperHelper.mapClaim(token, model, domainName);
             }
         }
     }
