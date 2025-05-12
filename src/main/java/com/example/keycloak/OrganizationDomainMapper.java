@@ -27,10 +27,12 @@ import org.keycloak.provider.EnvironmentDependentProviderFactory;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.representations.IDToken;
 
+import org.jboss.logging.Logger;
 
 public class OrganizationDomainMapper extends AbstractOIDCProtocolMapper implements OIDCAccessTokenMapper, OIDCIDTokenMapper, UserInfoTokenMapper {
 
     public static final String PROVIDER_ID = "organization-domain-mapper";
+    private static final Logger logger = Logger.getLogger(OrganizationDomainMapper.class);
 
     private static final List<ProviderConfigProperty> configProperties = new ArrayList<>();
 
@@ -78,10 +80,17 @@ public class OrganizationDomainMapper extends AbstractOIDCProtocolMapper impleme
 
         if (organization != null) {
             List<OrganizationDomainModel> domains = organization.getDomains().toList();
+            logger.debugf("Found organization: %s, domains: %s", organization.getName(), domains);
+    
             if (domains != null && !domains.isEmpty()) {
                 String domainName = domains.get(0).getName();
+                logger.debugf("Mapped first domain name: %s", domainName);
                 OIDCAttributeMapperHelper.mapClaim(token, model, domainName);
+            } else {
+                logger.debug("No domains found in organization.");
             }
+        } else {
+            logger.debug("Organization not resolved for user.");
         }
     }
 
