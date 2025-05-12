@@ -70,16 +70,13 @@ public class OrganizationDomainMapper extends AbstractOIDCProtocolMapper impleme
         OrganizationModel organization;
 
         if (orgId == null) {
-            List<OrganizationModel> orgs = session.getProvider(OrganizationProvider.class).getUserOrganizations(userSession.getUser());
-            organization = orgs.isEmpty() ? null : orgs.get(0); 
+            organization = resolveFromRequestedScopes(session, userSession, clientSessionCtx).findFirst().orElse(null);
         } else {
             organization = session.getProvider(OrganizationProvider.class).getById(orgId);
         }
 
         if (organization != null) {
             List<OrganizationDomainModel> domains = organization.getDomains().toList();
-            logger.debugf("Found organization: %s, domains: %s", organization.getName(), domains);
-    
             if (domains != null && !domains.isEmpty()) {
                 String domainName = domains.get(0).getName();
                 OIDCAttributeMapperHelper.mapClaim(token, model, domainName);
