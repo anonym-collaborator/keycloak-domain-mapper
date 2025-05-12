@@ -27,12 +27,9 @@ import org.keycloak.provider.EnvironmentDependentProviderFactory;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.representations.IDToken;
 
-import org.jboss.logging.Logger;
-
 public class OrganizationDomainMapper extends AbstractOIDCProtocolMapper implements OIDCAccessTokenMapper, OIDCIDTokenMapper, UserInfoTokenMapper {
 
     public static final String PROVIDER_ID = "organization-domain-mapper";
-    private static final Logger logger = Logger.getLogger(OrganizationDomainMapper.class);
 
     private static final List<ProviderConfigProperty> configProperties = new ArrayList<>();
 
@@ -73,7 +70,8 @@ public class OrganizationDomainMapper extends AbstractOIDCProtocolMapper impleme
         OrganizationModel organization;
 
         if (orgId == null) {
-            organization = resolveFromRequestedScopes(session, userSession, clientSessionCtx).findFirst().orElse(null);
+            List<OrganizationModel> orgs = session.getProvider(OrganizationProvider.class).getUserOrganizations(userSession.getUser());
+            organization = orgs.isEmpty() ? null : orgs.get(0); 
         } else {
             organization = session.getProvider(OrganizationProvider.class).getById(orgId);
         }
@@ -84,13 +82,8 @@ public class OrganizationDomainMapper extends AbstractOIDCProtocolMapper impleme
     
             if (domains != null && !domains.isEmpty()) {
                 String domainName = domains.get(0).getName();
-                logger.debugf("Mapped first domain name: %s", domainName);
                 OIDCAttributeMapperHelper.mapClaim(token, model, domainName);
-            } else {
-                logger.debug("No domains found in organization.");
             }
-        } else {
-            logger.debug("Organization not resolved for user.");
         }
     }
 
